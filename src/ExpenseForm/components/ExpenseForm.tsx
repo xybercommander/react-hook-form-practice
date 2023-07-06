@@ -2,12 +2,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import categories from "../categories";
+import { Dispatch, SetStateAction } from "react";
 
-const ExpenseForm = () => {
+interface Props {
+  expenses: Object[];
+  setExpenses: Dispatch<SetStateAction<Object[]>>;
+}
+
+const ExpenseForm = ({ expenses, setExpenses }: Props) => {
+  /* The `const schema` is defining a validation schema using the `zod` library. It specifies the
+  structure and validation rules for the form data. */
   const schema = z.object({
     description: z
       .string({ invalid_type_error: "Description is required." })
-      .min(6, { message: "Description should have more than 5 characters." }),
+      .min(4, { message: "Description should have more than 3 characters." }),
     amount: z
       .number({ invalid_type_error: "Amount is required." })
       .min(1, { message: "Amount should be more than ₹1." }),
@@ -18,18 +26,37 @@ const ExpenseForm = () => {
 
   type FormData = z.infer<typeof schema>;
 
+  /* The code `const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
+  resolver: zodResolver(schema) });` is using the `useForm` hook from the `react-hook-form` library
+  to initialize form functionality. */
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
+  /**
+   * The function onSubmit adds data to the expenses array and resets the form.
+   * @param {FieldValues} data - The `data` parameter is of type `FieldValues`. It represents the form
+   * data that is being submitted.
+   */
   const onSubmit = (data: FieldValues) => {
-    console.log(data);
+    // console.log(data);
+    if (expenses.length === 1) {
+      if (Object.keys(expenses[0]).length === 0) {
+        setExpenses([data]);
+      } else {
+        setExpenses([...expenses, data]);
+      }
+    } else {
+      setExpenses([...expenses, data]);
+    }
+    reset();
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} style={{ width: "50vw" }}>
       {/* The code you provided is rendering a form input field for the
       "Description" field. */}
       <div className="mb-3">

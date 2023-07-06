@@ -22,5 +22,6 @@
   },
   "include": ["src"],
   "allowSyntheticDefaultImports" : true,
+  "suppressImplicitAnyIndexErrors": true,
   "references": [{ "path": "./tsconfig.node.json" }]
 }
